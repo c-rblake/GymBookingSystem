@@ -12,6 +12,7 @@ namespace GymBookingSystem.Data
     {
         //4.
         public DbSet<GymClass> GymClasses { get; set; }
+        public DbSet<ApplicationUserGymClass> ApplicationUserGymClasses { get; set; }
 
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
@@ -24,7 +25,7 @@ namespace GymBookingSystem.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<GymClass>().Property<DateTime>("Edited"); // ShadowProperty.
+            //modelBuilder.Entity<GymClass>().Property<DateTime>("Edited"); // ShadowProperty. messes with seed
             
             //Explicit fluent API connection of Join Table 
             modelBuilder.Entity<ApplicationUser>()

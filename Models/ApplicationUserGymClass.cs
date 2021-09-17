@@ -7,7 +7,7 @@ namespace GymBookingSystem.Models
 {
     public class ApplicationUserGymClass
     {
-        public int Id { get; set; }
+        //public int Id { get; set; }
         public string ApplicationUserId { get; set; }
         public int GymClassId { get; set; }
 

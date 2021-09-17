@@ -7,22 +7,25 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using GymBookingSystem.Data;
 using GymBookingSystem.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace GymBookingSystem.Controllers
 {
     public class GymClassesController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ApplicationDbContext db;
+        private readonly UserManager<ApplicationUser> userManager;
 
-        public GymClassesController(ApplicationDbContext context)
+        public GymClassesController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
         {
-            _context = context;
+            db = context;
+            this.userManager = userManager;
         }
 
         // GET: GymClasses
         public async Task<IActionResult> Index()
         {
-            return View(await _context.GymClasses.ToListAsync());
+            return View(await db.GymClasses.ToListAsync());
         }
 
         // GET: GymClasses/Details/5
@@ -33,7 +36,7 @@ namespace GymBookingSystem.Controllers
                 return NotFound();
             }
 
-            var gymClass = await _context.GymClasses
+            var gymClass = await db.GymClasses
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (gymClass == null)
             {
@@ -41,6 +44,43 @@ namespace GymBookingSystem.Controllers
             }
 
             return View(gymClass);
+        }
+
+        public async Task<IActionResult> BookingToggle(int? id)
+        {
+            if (id == null) return NotFound();
+
+
+            var user = await userManager.GetUserAsync(User);
+
+            // from User ==> application user
+
+            //var isInClass = db.ApplicationUserGymClasses.Find(User.Identity.)
+
+            //Entity<ApplicationUserGymClass>()
+            //    .HasKey(a => new { a.ApplicationUserId, a.GymClassId });
+
+            //var key = User.Id
+
+            //new { a.ApplicationUserId, a.GymClassId }
+
+        //    var samuraiANDFilteredQuotes = _context.Samurais
+        //.Select(s => new
+        //{
+        //    Samurai = s,
+        //    HappyQuotes = s.Quotes.Where(q => q.Text.Contains("happy"))
+        //}).ToList();
+
+            //var classToBook = db.GymClasses.FindAsync(id); //EF
+            //WORKs BUT GOES TRHOUGH 2 LISTS.
+            var classToBook = db.GymClasses.Include(gc => gc.ApplicationUsers.Where(au => au.Email == user.Email))
+                .FirstOrDefaultAsync(c => c.Id == id); // LINQ 
+
+            //User MANAGER SOMETHING.
+
+            return View(nameof(Index));
+
+
         }
 
         // GET: GymClasses/Create
@@ -58,8 +98,8 @@ namespace GymBookingSystem.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(gymClass);
-                await _context.SaveChangesAsync();
+                db.Add(gymClass);
+                await db.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
             return View(gymClass);
@@ -73,7 +113,7 @@ namespace GymBookingSystem.Controllers
                 return NotFound();
             }
 
-            var gymClass = await _context.GymClasses.FindAsync(id);
+            var gymClass = await db.GymClasses.FindAsync(id);
             if (gymClass == null)
             {
                 return NotFound();
@@ -97,8 +137,8 @@ namespace GymBookingSystem.Controllers
             {
                 try
                 {
-                    _context.Update(gymClass);
-                    await _context.SaveChangesAsync();
+                    db.Update(gymClass);
+                    await db.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -124,7 +164,7 @@ namespace GymBookingSystem.Controllers
                 return NotFound();
             }
 
-            var gymClass = await _context.GymClasses
+            var gymClass = await db.GymClasses
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (gymClass == null)
             {
@@ -139,15 +179,15 @@ namespace GymBookingSystem.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var gymClass = await _context.GymClasses.FindAsync(id);
-            _context.GymClasses.Remove(gymClass);
-            await _context.SaveChangesAsync();
+            var gymClass = await db.GymClasses.FindAsync(id);
+            db.GymClasses.Remove(gymClass);
+            await db.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool GymClassExists(int id)
         {
-            return _context.GymClasses.Any(e => e.Id == id);
+            return db.GymClasses.Any(e => e.Id == id);
         }
     }
 }
