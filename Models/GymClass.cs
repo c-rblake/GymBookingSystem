@@ -20,5 +20,8 @@ namespace GymBookingSystem.Models
         //Nav Properties Join Table
 
         public ICollection<ApplicationUserGymClass> Members { get; set; }
+
+        
+
     }
 }

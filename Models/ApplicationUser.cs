@@ -8,7 +8,17 @@ namespace GymBookingSystem.Models
 {
     public class ApplicationUser : IdentityUser
     {
-        
+
+
+
+
+
+        //Nav property EF CORE 5. Implicit Infer
+
+        //public ICollection<GymClass> GymClasses{ get; set; }
+
+        //NAV PROPERTIES to JOIN TABLE
+        public ICollection<ApplicationUserGymClass> UserGymClasses { get; set; }
 
     }
 }
