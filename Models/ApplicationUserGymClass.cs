@@ -10,5 +10,11 @@ namespace GymBookingSystem.Models
         public int Id { get; set; }
         public string ApplicationUserId { get; set; }
         public int GymClassId { get; set; }
+
+        //NAV/FLUENT PROPRETIES
+        public ApplicationUser ApplicationUser { get; set; }
+        public GymClass GymClass { get; set; }
+
+
     }
 }

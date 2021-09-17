@@ -15,10 +15,10 @@ namespace GymBookingSystem.Models
 
         //Nav property EF CORE 5. Implicit Infer
 
-        //public ICollection<GymClass> GymClasses{ get; set; }
+        public ICollection<GymClass> GymClasses{ get; set; }
 
         //NAV PROPERTIES to JOIN TABLE
-        public ICollection<ApplicationUserGymClass> UserGymClasses { get; set; }
+        public ICollection<ApplicationUserGymClass> ApplicationUserGymClasses { get; set; }
 
     }
 }

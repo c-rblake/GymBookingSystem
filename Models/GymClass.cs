@@ -15,11 +15,9 @@ namespace GymBookingSystem.Models
         public string Description { get; set; }
 
         //Nav Properties
-        //public ICollection<ApplicationUser> Members { get; set; } This is to set without join table
-        
-        //Nav Properties Join Table
-
-        public ICollection<ApplicationUserGymClass> Members { get; set; }
+        public ICollection<ApplicationUser> ApplicationUsers { get; set; } //This is to set without join table
+        //Nav Properties Explicit Join Table
+        public ICollection<ApplicationUserGymClass> ApplicationUserGymClasses { get; set; }
 
         
 
