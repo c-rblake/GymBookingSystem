@@ -36,12 +36,19 @@ namespace GymBookingSystem
 
             //services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
             //services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
-            services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
+            services.AddDefaultIdentity<ApplicationUser>(options =>
+                {
+                    options.SignIn.RequireConfirmedAccount = false;
+                    options.Password.RequireDigit = false;
+                    options.Password.RequiredLength = 2;
+                    options.Password.RequireNonAlphanumeric = false;
+                    options.Password.RequireUppercase = false;
+                })
                 .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
-
-            services.AddControllersWithViews(o => o.Filters.Add(new AuthorizeFilter()));
+            services.AddControllersWithViews();
+            //services.AddControllersWithViews(o => o.Filters.Add(new AuthorizeFilter()));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
