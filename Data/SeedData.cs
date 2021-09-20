@@ -1,5 +1,7 @@
 ﻿using Bogus;
 using GymBookingSystem.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -19,6 +21,33 @@ namespace GymBookingSystem.Data
             {
                 //TODO
                 fake = new Faker("sv");
+                var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
+                var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+
+                //if (!await roleManager.RoleExistsAsync("Admin")) // Debugger Passes this check...
+                if(true)
+                {
+                    // first we create Admin role  
+                    var role = new IdentityRole();
+                    role.Name = "Admin";
+                    await roleManager.CreateAsync(role);
+
+                    //Make ApplicationUser
+                    
+                    var user = new ApplicationUser();
+                    user.UserName = "edit@e.com"; // USERNAME and Email are the same here
+                    user.Email = "edit@e.com";
+
+                    string userPassword = "Passw0rd";
+
+                    //if (!await checkUser) Check for success
+                    await userManager.CreateAsync(user, userPassword);
+
+                    await userManager.AddToRoleAsync(user, "Admin"); // Doesnt Work.
+
+                    await db.SaveChangesAsync();
+                }
+
 
                 if (await db.ApplicationUserGymClasses.AnyAsync()) return;
 
