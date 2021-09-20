@@ -9,6 +9,7 @@ using GymBookingSystem.Data;
 using GymBookingSystem.Models;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 
 namespace GymBookingSystem.Controllers
 {
@@ -37,17 +38,16 @@ namespace GymBookingSystem.Controllers
                 return NotFound();
             }
 
-            var gymClass = await db.GymClasses
+            var gymClass = await db.GymClasses.Include(gc => gc.ApplicationUsers)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (gymClass == null)
             {
                 return NotFound();
             }
-
             return View(gymClass);
         }
 
-
+        [Authorize]
         public async Task<IActionResult> BookingToggle(int? id)
         {
             //bool isAttending;
@@ -80,6 +80,8 @@ namespace GymBookingSystem.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [Authorize]
+        [HttpGet]
         // GET: GymClasses/Create
         public IActionResult Create()
         {

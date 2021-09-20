@@ -15,7 +15,10 @@ namespace GymBookingSystem.Models
         public string Description { get; set; }
 
         //Nav Properties
-        public ICollection<ApplicationUser> ApplicationUsers { get; set; } //This is to set without join table
+        //public ICollection<ApplicationUser> ApplicationUsers { get; set; } = new ICollection<ApplicationUser>(); //This is to set without join table
+        //To Debugg I need a non-null object in Razor
+        public List<ApplicationUser> ApplicationUsers { get; set; } = new List<ApplicationUser>();
+
         //Nav Properties Explicit Join Table
         public ICollection<ApplicationUserGymClass> ApplicationUserGymClasses { get; set; }
 
