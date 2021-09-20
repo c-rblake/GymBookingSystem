@@ -22,14 +22,32 @@ namespace GymBookingSystem.Data
 
                 //if (await db.ApplicationUserGymClasses.AnyAsync()) return;
 
+                var oneGymClass = MakeOneClass();
+                await db.GymClasses.AddAsync(oneGymClass);
+                await db.SaveChangesAsync();
+
                 var classes = MakeGymClasses();
-                await db.GymClasses.AddRangeAsync(classes); // object MakeGymClasses() CANNOT CONVERT OBJECT..
+                await db.GymClasses.AddRangeAsync(classes); // "object" MakeGymClasses() CANNOT CONVERT OBJECT
+                                                            // .. An issue with AddRange <-- any type not GymClasses.AddRange the right type. Still nothing though.
                 await db.SaveChangesAsync();
 
             }
         }
 
-        private static object MakeGymClasses()
+        private static GymClass MakeOneClass()
+        {
+            var oneGymClass = new GymClass
+            {
+                Name = "Jumping Jack",
+                Description = "Jumping with arms and legs",
+                StartTime = DateTime.Now,
+                Duration = TimeSpan.FromMinutes(20)
+            };
+
+            return oneGymClass;
+        }
+
+        private static List<GymClass> MakeGymClasses()
         {
             var gymClasses = new List<GymClass>();
 
@@ -38,7 +56,7 @@ namespace GymBookingSystem.Data
                 Console.WriteLine("hello");
                 var gymclass = new GymClass
                 {
-                    Id = i,
+                    //Id = i, // THIS HERE LINE `SHOULD NOT BE HERE RIGHT?? it is set by the dbContext...
                     Name = $"{fake.Name.FirstName()} + ball ",
                     StartTime = fake.Date.Recent(7),
                     Duration = TimeSpan.FromMinutes(20),
