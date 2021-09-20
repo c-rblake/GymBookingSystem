@@ -20,18 +20,66 @@ namespace GymBookingSystem.Data
                 //TODO
                 fake = new Faker("sv");
 
-                //if (await db.ApplicationUserGymClasses.AnyAsync()) return;
+                if (await db.ApplicationUserGymClasses.AnyAsync()) return;
 
-                var oneGymClass = MakeOneClass();
-                await db.GymClasses.AddAsync(oneGymClass);
-                await db.SaveChangesAsync();
+                //var oneGymClass = MakeOneClass();
+                //await db.GymClasses.AddAsync(oneGymClass);
+                //await db.SaveChangesAsync();
 
                 var classes = MakeGymClasses();
                 await db.GymClasses.AddRangeAsync(classes); // "object" MakeGymClasses() CANNOT CONVERT OBJECT
                                                             // .. An issue with AddRange <-- any type not GymClasses.AddRange the right type. Still nothing though.
+
+                var applicationUsers = MakeApplicationUsers();
+                //await db.ApplicationUser.AddRangeAsync(applicationUsers); // The Db is not called application user
+                await db.Users.AddRangeAsync(applicationUsers); // Where AM I adding these...
                 await db.SaveChangesAsync();
 
+                var applicationUserGymClasses = MakeApplicationUserGymClasses(applicationUsers, classes);
+                await db.ApplicationUserGymClasses.AddRangeAsync(applicationUserGymClasses);
+                await db.SaveChangesAsync();
+
+                MakeClasses(db);
+
             }
+        }
+
+        private static List<ApplicationUserGymClass> MakeApplicationUserGymClasses(List<ApplicationUser> applicationUsers, List<GymClass> gymClasses)
+        {
+            var applicationUserGymClasses = new List<ApplicationUserGymClass>();
+
+
+            for (int i = 0; i < 10; i++)
+            {
+
+                var applicationGymClass = new ApplicationUserGymClass
+                {
+                    ApplicationUserId = applicationUsers[i].Id,
+                    GymClassId = gymClasses[i].Id
+                };
+                applicationUserGymClasses.Add(applicationGymClass);
+
+            }
+            return applicationUserGymClasses;
+
+        }
+
+        private static List<ApplicationUser> MakeApplicationUsers()
+        {
+            var applicationUsers = new List<ApplicationUser>();
+
+            for (int i = 0; i < 10; i++)
+            {
+                var applicationUser = new ApplicationUser
+                {
+                    UserName = fake.Name.FirstName(),
+                    Email = fake.Internet.Email(),
+                    //Id = fake.Lorem.Letter(8).ToUpper() // Works??
+                };
+                applicationUsers.Add(applicationUser);
+            }
+
+            return applicationUsers;
         }
 
         private static GymClass MakeOneClass()
@@ -61,14 +109,16 @@ namespace GymBookingSystem.Data
                     StartTime = fake.Date.Recent(7),
                     Duration = TimeSpan.FromMinutes(20),
                     Description = "Pancake"
-                    
                 };
                 gymClasses.Add(gymclass);
             }
             return gymClasses;
         }
 
-        private static List<ApplicationUserGymClass> MakeClasses()
+
+
+
+        private static async void MakeClasses(DbContext db)
         {
             var applicationGymClasses = new List<ApplicationUserGymClass>();
             var gymClasses = new List<GymClass>();
@@ -79,10 +129,10 @@ namespace GymBookingSystem.Data
                 Console.WriteLine("hello");
                 var gymclass = new GymClass
                 {
-                    Id = i,
                     Name = $"{fake.Name.FirstName()} + ball ",
                     StartTime = fake.Date.Recent(7),
-                    Duration = TimeSpan.FromMinutes(20)
+                    Duration = TimeSpan.FromMinutes(20),
+                    Description = "Random Description Here"
                 };
                 gymClasses.Add(gymclass);
 
@@ -101,9 +151,10 @@ namespace GymBookingSystem.Data
                 };
                 applicationGymClasses.Add(applicationGymClasse);
 
-
             }
-            return applicationGymClasses;
+
+            await db.SaveChangesAsync();
+
         }
     }
 }

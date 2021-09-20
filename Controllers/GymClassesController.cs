@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using GymBookingSystem.Data;
 using GymBookingSystem.Models;
 using Microsoft.AspNetCore.Identity;
+using System.Security.Claims;
 
 namespace GymBookingSystem.Controllers
 {
@@ -46,41 +47,37 @@ namespace GymBookingSystem.Controllers
             return View(gymClass);
         }
 
+
         public async Task<IActionResult> BookingToggle(int? id)
         {
+            //bool isAttending;
             if (id == null) return NotFound();
+            //var user = await userManager.GetUserAsync(User); GET IDENTITY USER
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier); // will give the user's userId
+            var userName = User.FindFirstValue(ClaimTypes.Name); // will give the user's userName
+            var isAttendingRow = db.ApplicationUserGymClasses.Find(userId, id); //null eller rad
 
+            // For user Feedback
+            GymClass gymClass = db.GymClasses.FirstOrDefault(gc => gc.Id == id);
 
-            var user = await userManager.GetUserAsync(User);
-
-            // from User ==> application user
-
-            //var isInClass = db.ApplicationUserGymClasses.Find(User.Identity.)
-
-            //Entity<ApplicationUserGymClass>()
-            //    .HasKey(a => new { a.ApplicationUserId, a.GymClassId });
-
-            //var key = User.Id
-
-            //new { a.ApplicationUserId, a.GymClassId }
-
-        //    var samuraiANDFilteredQuotes = _context.Samurais
-        //.Select(s => new
-        //{
-        //    Samurai = s,
-        //    HappyQuotes = s.Quotes.Where(q => q.Text.Contains("happy"))
-        //}).ToList();
-
-            //var classToBook = db.GymClasses.FindAsync(id); //EF
-            //WORKs BUT GOES TRHOUGH 2 LISTS.
-            var classToBook = db.GymClasses.Include(gc => gc.ApplicationUsers.Where(au => au.Email == user.Email))
-                .FirstOrDefaultAsync(c => c.Id == id); // LINQ 
-
-            //User MANAGER SOMETHING.
-
-            return View(nameof(Index));
-
-
+            if (isAttendingRow is null)
+            {
+                db.ApplicationUserGymClasses.Add(new ApplicationUserGymClass
+                {
+                    ApplicationUserId = userId,
+                    GymClassId = (int)id
+                });
+                TempData["BookedStatus"] = $"Successfull booking for {gymClass.Name} at {gymClass.StartTime}";
+                //TempData["BookedStatus"] = $"Successfull booking for ...";
+            }
+            else
+            {
+                db.ApplicationUserGymClasses.Remove(isAttendingRow);
+                TempData["BookedStatus"] = $"Successfull UNbooking for {gymClass.Name} at {gymClass.StartTime}";
+                //TempData["BookedStatus"] = $"Successfull UNbooking for ";
+            }
+            await db.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: GymClasses/Create
