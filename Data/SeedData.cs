@@ -20,13 +20,10 @@ namespace GymBookingSystem.Data
                 //TODO
                 fake = new Faker("sv");
 
-                if (await db.ApplicationUserGymClasses.AnyAsync())
-                {
-                    return;
-                }
+                //if (await db.ApplicationUserGymClasses.AnyAsync()) return;
 
                 var classes = MakeGymClasses();
-                await db.AddRangeAsync(classes);
+                await db.GymClasses.AddRangeAsync(classes); // object MakeGymClasses() CANNOT CONVERT OBJECT..
                 await db.SaveChangesAsync();
 
             }
