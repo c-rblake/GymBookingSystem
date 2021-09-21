@@ -28,10 +28,20 @@ namespace GymBookingSystem.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
+            return View(await db.GymClasses.Where(gc => gc.StartTime > DateTime.Now).ToListAsync());
+        }
 
-
-            return View(await db.ApplicationUserGymClasses.ToListAsync());
-
+        [Authorize]
+        public async Task<IActionResult> MyClasses()
+        {
+            //Logic
+            return View(nameof(Index), await db.GymClasses.ToListAsync());
+        }
+        [Authorize]
+        public async Task<IActionResult> MyHistory()
+        {
+            //Logic
+            return View(nameof(Index),await db.GymClasses.ToListAsync());
         }
 
         public async Task<IActionResult> Index2()

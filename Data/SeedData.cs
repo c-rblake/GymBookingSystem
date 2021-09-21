@@ -68,7 +68,7 @@ namespace GymBookingSystem.Data
                 await db.ApplicationUserGymClasses.AddRangeAsync(applicationUserGymClasses);
                 await db.SaveChangesAsync();
 
-                MakeClasses(db);
+                //MakeClasses(db);
 
             }
         }
@@ -78,13 +78,15 @@ namespace GymBookingSystem.Data
             var applicationUserGymClasses = new List<ApplicationUserGymClass>();
 
 
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < 20; i++)
             {
 
                 var applicationGymClass = new ApplicationUserGymClass
                 {
                     ApplicationUserId = applicationUsers[i].Id,
-                    GymClassId = gymClasses[i].Id
+                    GymClassId = gymClasses[i].Id                    
+                    //ApplicationUserId = applicationUsers[i%applicationUsers.Count].Id,
+                    //GymClassId = gymClasses[i%gymClasses.Count].Id
                 };
                 applicationUserGymClasses.Add(applicationGymClass);
 
@@ -97,7 +99,7 @@ namespace GymBookingSystem.Data
         {
             var applicationUsers = new List<ApplicationUser>();
 
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < 20; i++)
             {
                 var applicationUser = new ApplicationUser
                 {
@@ -130,6 +132,8 @@ namespace GymBookingSystem.Data
         private static List<GymClass> MakeGymClasses()
         {
             var gymClasses = new List<GymClass>();
+            var timeSpanOld = new TimeSpan(5, 4, 0, 0);
+            var timeSpan = new TimeSpan(5, 4, 0, 0);
 
             for (int i = 0; i < 10; i++)
             {
@@ -138,23 +142,23 @@ namespace GymBookingSystem.Data
                 {
                     //Id = i, // THIS HERE LINE `SHOULD NOT BE HERE RIGHT?? it is set by the dbContext...
                     Name = $"{fake.Name.FirstName()} + ball ",
-                    StartTime = fake.Date.Recent(7),
+                    StartTime = fake.Date.Between((DateTime.Now - timeSpanOld), (DateTime.Now + timeSpan)),
                     Duration = TimeSpan.FromMinutes(20),
-                    Description = "Pancake"
+                    Description = "Random Description Here"
+
                 };
                 gymClasses.Add(gymclass);
             }
             return gymClasses;
         }
 
-
-
-
         private static async void MakeClasses(DbContext db)
         {
             var applicationGymClasses = new List<ApplicationUserGymClass>();
             var gymClasses = new List<GymClass>();
             var ApplicationUsers = new List<ApplicationUser>();
+            var timeSpanOld = new TimeSpan(5,4, 0, 0);
+            var timeSpan = new TimeSpan(5,4,0,0);
 
             for (int i = 0; i < 10; i++)
             {
@@ -162,7 +166,7 @@ namespace GymBookingSystem.Data
                 var gymclass = new GymClass
                 {
                     Name = $"{fake.Name.FirstName()} + ball ",
-                    StartTime = fake.Date.Recent(7),
+                    StartTime = fake.Date.Between((DateTime.Now - timeSpanOld), (DateTime.Now + timeSpan)),
                     Duration = TimeSpan.FromMinutes(20),
                     Description = "Random Description Here"
                 };

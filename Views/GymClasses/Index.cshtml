@@ -9,6 +9,18 @@
 <p>
     <a asp-action="Create">Create New</a>
 </p>
+<ul class="navbar-nav flex-grow-1">
+    <li class="nav-item">
+        <a class="nav-link text-dark" asp-area="" asp-controller="GymClasses" asp-action="Create">Create New</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link text-dark" asp-area="" asp-controller="GymClasses" asp-action="MyClasses">My Classes</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link text-dark" asp-area="" asp-controller="GymClasses" asp-action="MyHistory">My History</a>
+    </li>
+</ul>
+
 @if (TempData["BookedStatus"] != null)
 {
     <div class="index-options text-center text-success" @*id="threeSeconds"*@>
@@ -57,19 +69,19 @@
                 </td>
                 @if (User.Identity.IsAuthenticated)
                 {
-            <td>
-                <a asp-action="BookingToggle" asp-route-id="@item.Id">BookToggle</a>
+                    <td>
+                        <a asp-action="BookingToggle" asp-route-id="@item.Id">BookToggle</a>
 
-                @if (TempData["Toggle"] != null)
-                {
-                    <a asp-action="BookingToggle" asp-route-id="@item.Id">Book</a>
-                }
-                else
-                {
-                    <a asp-action="BookingToggle" asp-route-id="@item.Id">UnBook</a>
-                }
+                        @if (TempData["Toggle"] != null)
+                        {
+                            <a asp-action="BookingToggle" asp-route-id="@item.Id">Book</a>
+                        }
+                        else
+                        {
+                            <a asp-action="BookingToggle" asp-route-id="@item.Id">UnBook</a>
+                        }
 
-            </td>
+                    </td>
                     @if (User.IsInRole("Admin"))
                     {
                         <td>
