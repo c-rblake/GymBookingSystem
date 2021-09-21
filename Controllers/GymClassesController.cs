@@ -28,7 +28,20 @@ namespace GymBookingSystem.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
-            return View(await db.GymClasses.ToListAsync());
+
+
+            return View(await db.ApplicationUserGymClasses.ToListAsync());
+
+        }
+
+        public async Task<IActionResult> Index2()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userGymClasses = db.ApplicationUserGymClasses.ToList();
+            var isAttending = db.ApplicationUserGymClasses.Where(agc => agc.ApplicationUserId == userId);
+
+            return View(await db.GymClasses.Include(gc => gc.ApplicationUsers).ToListAsync());
+
         }
 
         // GET: GymClasses/Details/5
@@ -58,7 +71,7 @@ namespace GymBookingSystem.Controllers
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier); // will give the user's userId
             var userName = User.FindFirstValue(ClaimTypes.Name); // will give the user's userName
             var isAttendingRow = db.ApplicationUserGymClasses.Find(userId, id); //null eller rad
-
+            
             // For user Feedback
             GymClass gymClass = db.GymClasses.FirstOrDefault(gc => gc.Id == id);
 
@@ -71,12 +84,15 @@ namespace GymBookingSystem.Controllers
                 });
                 TempData["BookedStatus"] = $"Successfull booking for {gymClass.Name} at {gymClass.StartTime}";
                 //TempData["BookedStatus"] = $"Successfull booking for ...";
+                TempData["Toggle"] = true;
+
             }
             else
             {
                 db.ApplicationUserGymClasses.Remove(isAttendingRow);
                 TempData["BookedStatus"] = $"Successfull UNbooking for {gymClass.Name} at {gymClass.StartTime}";
                 //TempData["BookedStatus"] = $"Successfull UNbooking for ";
+                TempData["Toggle"] = null;
             }
             await db.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
