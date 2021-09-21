@@ -9,9 +9,10 @@ namespace GymBookingSystem.Models
     public class ApplicationUser : IdentityUser
     {
 
-
-
-
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string FullName { get; set; }
+        public DateTime TimeOfRegistration { get; set; } //Can be added as shadow property.
 
         //Nav property EF CORE 5. Implicit Infer
 

@@ -101,8 +101,11 @@ namespace GymBookingSystem.Data
             {
                 var applicationUser = new ApplicationUser
                 {
+                    FirstName = fake.Name.FirstName(),
+                    LastName = fake.Name.LastName(),
                     UserName = fake.Name.FirstName(),
                     Email = fake.Internet.Email(),
+                    TimeOfRegistration = fake.Date.Recent(3)
                     //Id = fake.Lorem.Letter(8).ToUpper() // Works??
                 };
                 applicationUsers.Add(applicationUser);

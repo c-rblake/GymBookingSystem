@@ -61,6 +61,11 @@ namespace GymBookingSystem.Areas.Identity.Pages.Account
             [Display(Name = "Confirm password")]
             [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
             public string ConfirmPassword { get; set; }
+
+            public string FirstName { get; set; }
+            public string LastName { get; set; }
+            public string FullName { get; set; }
+            public DateTime TimeOfRegistration { get; set; } //Can be added as shadow property.
         }
 
         public async Task OnGetAsync(string returnUrl = null)
