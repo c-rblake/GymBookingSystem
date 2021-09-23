@@ -34,8 +34,11 @@ namespace GymBookingSystem.Controllers
         public async Task<IActionResult> MyHistory()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            //Not functioning as intended. Perhaps turn it around.
             var model = db.GymClasses.Include(gc=> gc.ApplicationUsers.Where(au => au.Id == userId))
                 .Where(gc => gc.StartTime < DateTime.Now);
+
+            //var mdl = db.ApplicationUserGymClasses.Where()
 
             return View(nameof(Index),await model.ToListAsync());
         }

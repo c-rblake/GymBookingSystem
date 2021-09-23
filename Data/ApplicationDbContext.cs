@@ -40,7 +40,7 @@ namespace GymBookingSystem.Data
             modelBuilder.Entity<ApplicationUserGymClass>()
                 .HasKey(a => new { a.ApplicationUserId, a.GymClassId });
 
-
+            modelBuilder.Entity<GymClass>().HasQueryFilter(g => g.StartTime > DateTime.Now);
             ////REVERESE SIMPLE TABLE
             //modelBuilder.Entity<GymClass>()
             //    .HasMany(gc => gc.ApplicationUsers)
