@@ -6,9 +6,15 @@
 
 <h1>Index</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
+
+
+<div class="row">
+    <div class="col-4"><a asp-action="Create">Create New</a></div>
+    <div class="col-4"><a asp-action="MyHistory">My History</a></div>
+    <div class="col-4"><a asp-action="MyBookings">My Bookings</a></div>
+</div>
+
+
 @if (TempData["BookedStatus"] != null)
 {
 <div class="index-options text-center text-success" @*id="threeSeconds"*@>

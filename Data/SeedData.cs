@@ -137,10 +137,10 @@ namespace GymBookingSystem.Data
                 var gymclass = new GymClass
                 {
                     //Id = i, // THIS HERE LINE `SHOULD NOT BE HERE RIGHT?? it is set by the dbContext...
-                    Name = $"{fake.Name.FirstName()} + ball ",
-                    StartTime = fake.Date.Recent(7),
+                    Name = $"{fake.Name.FirstName()}ball",
+                    StartTime = DateTime.Now.AddDays(fake.Random.Int(-5, 5)),
                     Duration = TimeSpan.FromMinutes(20),
-                    Description = "Pancake"
+                    Description = fake.Hacker.Verb()
                 };
                 gymClasses.Add(gymclass);
             }

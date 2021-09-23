@@ -30,6 +30,15 @@ namespace GymBookingSystem.Controllers
         {
             return View(await db.GymClasses.ToListAsync());
         }
+        [Authorize]
+        public async Task<IActionResult> MyHistory()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var model = db.GymClasses.Include(gc=> gc.ApplicationUsers.Where(au => au.Id == userId))
+                .Where(gc => gc.StartTime < DateTime.Now);
+
+            return View(nameof(Index),await model.ToListAsync());
+        }
 
         // GET: GymClasses/Details/5
         [Authorize]

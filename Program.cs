@@ -1,5 +1,6 @@
 using GymBookingSystem.Data;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -23,6 +24,11 @@ namespace GymBookingSystem
             {
 
                 var services = scope.ServiceProvider;
+                var context = services.GetRequiredService<ApplicationDbContext>();
+
+                context.Database.EnsureDeleted();
+                context.Database.Migrate();
+
 
                 try
                 {
