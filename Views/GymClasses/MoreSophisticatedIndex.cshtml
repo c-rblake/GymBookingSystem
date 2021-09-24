@@ -47,14 +47,16 @@
                 @if (!item.Attending)
                 {
                     <td>
-                        <a asp-action="BookingToggle" asp-route-id="@item.Id">Book Now</a>
+                        <a asp-action="BookingToggle" asp-route-id="@item.Id"
+                           class="btn btn-success">Book Now</a>
                     </td>
                 }
 
                 else
                 {
                     <td>
-                        <a asp-action="BookingToggle" asp-route-id="@item.Id">Unbook</a>
+                        <a asp-action="BookingToggle" asp-route-id="@item.Id"
+                           class="btn btn-danger" >Unbook</a>
                     </td>
                 }
 
