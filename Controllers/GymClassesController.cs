@@ -35,10 +35,20 @@ namespace GymBookingSystem.Controllers
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             //Not functioning as intended. Perhaps turn it around.
-            var model = db.GymClasses.Include(gc=> gc.ApplicationUsers.Where(au => au.Id == userId))
+            var model = db.GymClasses.IgnoreQueryFilters()
+                .Include(gc=> gc.ApplicationUsers.Where(au => au.Id == userId))
                 .Where(gc => gc.StartTime < DateTime.Now);
 
-            //var mdl = db.ApplicationUserGymClasses.Where()
+            // userId, id
+            var myHistoryIds = db.ApplicationUserGymClasses
+                .Where(agc => agc.ApplicationUserId == userId)
+                .Select(agc => agc.GymClassId); // Not needed if we want all. This is not a bool series though...
+
+            //var filtered = listOfAllVenues
+            //       .Where(x => !listOfBlockedVenues.Any(y => y.VenueId == x.Id));
+
+            var filtered = db.GymClasses.Where(gc => db.ApplicationUserGymClasses.Any(agc => agc.GymClassId == gc.Id));
+            // The seed is not Testable for this.
 
             return View(nameof(Index),await model.ToListAsync());
         }
