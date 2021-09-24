@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using GymBookingSystem.ViewModels;
 
 namespace GymBookingSystem.Data
 {
@@ -48,6 +49,9 @@ namespace GymBookingSystem.Data
             //Composite key
 
         }
+
+
+        //public DbSet<GymBookingSystem.ViewModels.GymClassAttendingViewModel> GymClassAttendingViewModel { get; set; }
 
     }
 }

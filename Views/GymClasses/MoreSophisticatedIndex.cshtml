@@ -1,28 +1,14 @@
-﻿@model IEnumerable<GymBookingSystem.Models.GymClass>
+﻿@model IEnumerable<GymBookingSystem.ViewModels.GymClassAttendingViewModel>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "MoreSophisticatedIndex";
 }
 
-<h1>Index</h1>
+<h1>MoreSophisticatedIndex</h1>
 
-
-
-<div class="row">
-    <div class="col-2"><a asp-action="Create">Create New</a></div>
-    <div class="col-2"><a asp-action="Index">All Classes</a></div>
-    <div class="col-2"><a asp-action="MyHistory">My History</a></div>
-    <div class="col-2"><a asp-action="MyBookings">My Bookings</a></div>
-    <div class="col-2"><a asp-action="MoreSophisticatedIndex">More Sophisticated Index</a></div>
-</div>
-
-
-@if (TempData["BookedStatus"] != null)
-{
-<div class="index-options text-center text-success" @*id="threeSeconds"*@>
-    <H1>@TempData["BookedStatus"].ToString()</H1>
-</div>
-}
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
 <table class="table">
     <thead>
         <tr>
@@ -36,17 +22,13 @@
                 @Html.DisplayNameFor(model => model.Duration)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Description)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.EndTime)
+                @Html.DisplayNameFor(model => model.Attending)
             </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-        @foreach (var item in Model)
-        {
+@foreach (var item in Model) {
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.Name)
@@ -58,30 +40,36 @@
                 @Html.DisplayFor(modelItem => item.Duration)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Description)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.EndTime)
+                @Html.DisplayFor(modelItem => item.Attending)
             </td>
             @if (User.Identity.IsAuthenticated)
             {
-                <td>
-                    
-                    <a asp-action="BookingToggle" asp-route-id="@item.Id">BookingToggle</a>
-                </td>
+                @if (!item.Attending)
+                {
+                    <td>
+                        <a asp-action="BookingToggle" asp-route-id="@item.Id">Book Now</a>
+                    </td>
+                }
+
+                else
+                {
+                    <td>
+                        <a asp-action="BookingToggle" asp-route-id="@item.Id">Unbook</a>
+                    </td>
+                }
+
                 @if (User.IsInRole("Admin"))
                 {
                     <td>
                         <a asp-action="Edit" asp-route-id="@item.Id">Edit</a><span>|</span>
                         <a asp-action="Details" asp-route-id="@item.Id">Details</a> <span>|</span>
                         <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-                        
+
                     </td>
-                     }
+                }
 
             }
-
         </tr>
-        }
+}
     </tbody>
 </table>

@@ -59,7 +59,7 @@ namespace GymBookingSystem.Data
 
                 var classes = MakeGymClasses();
                 await db.GymClasses.AddRangeAsync(classes); // "object" MakeGymClasses() CANNOT CONVERT OBJECT
-                                                            // .. An issue with AddRange <-- any type not GymClasses.AddRange the right type. Still nothing though.
+               
 
                 var applicationUsers = MakeApplicationUsers();
                 //await db.ApplicationUser.AddRangeAsync(applicationUsers); // The Db is not called application user
@@ -98,7 +98,7 @@ namespace GymBookingSystem.Data
                     ApplicationUserId = adminId,
                     GymClassId = gymClasses[i].Id
                 };
-                applicationUserGymClasses.Add(adminApplicationGymClass);
+                applicationUserGymClasses.Add(adminApplicationGymClass); // is never saved...
 
             }
             return applicationUserGymClasses;
