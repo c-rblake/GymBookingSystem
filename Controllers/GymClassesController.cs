@@ -41,6 +41,7 @@ namespace GymBookingSystem.Controllers
 
             // userId, id
             var myHistoryIds = db.ApplicationUserGymClasses
+                .IgnoreQueryFilters()
                 .Where(agc => agc.ApplicationUserId == userId)
                 .Select(agc => agc.GymClassId); // Not needed if we want all. This is not a bool series though...
 

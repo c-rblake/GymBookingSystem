@@ -24,7 +24,10 @@ namespace GymBookingSystem.Data
                 var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
                 var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
 
-                //if (!await roleManager.RoleExistsAsync("Admin")) // Debugger Passes this check...
+
+
+                if (await db.ApplicationUserGymClasses.AnyAsync()) return;
+
                 if(true)
                 {
                     // first we create Admin role  
@@ -48,8 +51,7 @@ namespace GymBookingSystem.Data
                     await db.SaveChangesAsync();
                 }
 
-
-                if (await db.ApplicationUserGymClasses.AnyAsync()) return;
+                var admin = await userManager.FindByEmailAsync("edit@e.com");
 
                 //var oneGymClass = MakeOneClass();
                 //await db.GymClasses.AddAsync(oneGymClass);
@@ -64,19 +66,22 @@ namespace GymBookingSystem.Data
                 await db.Users.AddRangeAsync(applicationUsers); // Where AM I adding these...
                 await db.SaveChangesAsync();
 
-                var applicationUserGymClasses = MakeApplicationUserGymClasses(applicationUsers, classes);
+                var applicationUserGymClasses = MakeApplicationUserGymClasses(applicationUsers, classes, admin);
                 await db.ApplicationUserGymClasses.AddRangeAsync(applicationUserGymClasses);
                 await db.SaveChangesAsync();
 
                 MakeClasses(db);
 
+                //if (!await roleManager.RoleExistsAsync("Admin")) // Debugger Passes this check...
             }
         }
 
-        private static List<ApplicationUserGymClass> MakeApplicationUserGymClasses(List<ApplicationUser> applicationUsers, List<GymClass> gymClasses)
+        private static List<ApplicationUserGymClass> MakeApplicationUserGymClasses(List<ApplicationUser> applicationUsers, List<GymClass> gymClasses, ApplicationUser admin)
         {
             var applicationUserGymClasses = new List<ApplicationUserGymClass>();
+            string adminId = admin.Id;
 
+            //var adminId = db.ApplicationUsers.Where(ac => ac.UserName == "edit@e.com").Select(ac => ac.Id).FirstOrDefault(); Not a good idea nice query though.
 
             for (int i = 0; i < 10; i++)
             {
@@ -88,10 +93,24 @@ namespace GymBookingSystem.Data
                 };
                 applicationUserGymClasses.Add(applicationGymClass);
 
+                var adminApplicationGymClass = new ApplicationUserGymClass
+                {
+                    ApplicationUserId = adminId,
+                    GymClassId = gymClasses[i].Id
+                };
+                applicationUserGymClasses.Add(adminApplicationGymClass);
+
             }
             return applicationUserGymClasses;
 
         }
+
+        //public IQueryable<ApplicationUser> GetUsersInRole(string roleName)
+        //{
+        //    return from user in ApplicationUsers
+        //           where user.Roles.Any(r => r.Role.Name == roleName)
+        //           select user;
+        //}
 
         private static List<ApplicationUser> MakeApplicationUsers()
         {
