@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using GymBookingSystem.ViewModels;
 
 namespace GymBookingSystem.Data
 {
@@ -40,7 +41,7 @@ namespace GymBookingSystem.Data
             modelBuilder.Entity<ApplicationUserGymClass>()
                 .HasKey(a => new { a.ApplicationUserId, a.GymClassId });
 
-
+            modelBuilder.Entity<GymClass>().HasQueryFilter(g => g.StartTime > DateTime.Now);
             ////REVERESE SIMPLE TABLE
             //modelBuilder.Entity<GymClass>()
             //    .HasMany(gc => gc.ApplicationUsers)
@@ -48,6 +49,9 @@ namespace GymBookingSystem.Data
             //Composite key
 
         }
+
+
+        //public DbSet<GymBookingSystem.ViewModels.GymClassAttendingViewModel> GymClassAttendingViewModel { get; set; }
 
     }
 }

@@ -24,7 +24,10 @@ namespace GymBookingSystem.Data
                 var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
                 var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
 
-                //if (!await roleManager.RoleExistsAsync("Admin")) // Debugger Passes this check...
+
+
+                if (await db.ApplicationUserGymClasses.AnyAsync()) return;
+
                 if(true)
                 {
                     // first we create Admin role  
@@ -48,8 +51,7 @@ namespace GymBookingSystem.Data
                     await db.SaveChangesAsync();
                 }
 
-
-                if (await db.ApplicationUserGymClasses.AnyAsync()) return;
+                var admin = await userManager.FindByEmailAsync("edit@e.com");
 
                 //var oneGymClass = MakeOneClass();
                 //await db.GymClasses.AddAsync(oneGymClass);
@@ -57,26 +59,29 @@ namespace GymBookingSystem.Data
 
                 var classes = MakeGymClasses();
                 await db.GymClasses.AddRangeAsync(classes); // "object" MakeGymClasses() CANNOT CONVERT OBJECT
-                                                            // .. An issue with AddRange <-- any type not GymClasses.AddRange the right type. Still nothing though.
+               
 
                 var applicationUsers = MakeApplicationUsers();
                 //await db.ApplicationUser.AddRangeAsync(applicationUsers); // The Db is not called application user
                 await db.Users.AddRangeAsync(applicationUsers); // Where AM I adding these...
                 await db.SaveChangesAsync();
 
-                var applicationUserGymClasses = MakeApplicationUserGymClasses(applicationUsers, classes);
+                var applicationUserGymClasses = MakeApplicationUserGymClasses(applicationUsers, classes, admin);
                 await db.ApplicationUserGymClasses.AddRangeAsync(applicationUserGymClasses);
                 await db.SaveChangesAsync();
 
                 //MakeClasses(db);
 
+                //if (!await roleManager.RoleExistsAsync("Admin")) // Debugger Passes this check...
             }
         }
 
-        private static List<ApplicationUserGymClass> MakeApplicationUserGymClasses(List<ApplicationUser> applicationUsers, List<GymClass> gymClasses)
+        private static List<ApplicationUserGymClass> MakeApplicationUserGymClasses(List<ApplicationUser> applicationUsers, List<GymClass> gymClasses, ApplicationUser admin)
         {
             var applicationUserGymClasses = new List<ApplicationUserGymClass>();
+            string adminId = admin.Id;
 
+            //var adminId = db.ApplicationUsers.Where(ac => ac.UserName == "edit@e.com").Select(ac => ac.Id).FirstOrDefault(); Not a good idea nice query though.
 
             for (int i = 0; i < 20; i++)
             {
@@ -90,10 +95,24 @@ namespace GymBookingSystem.Data
                 };
                 applicationUserGymClasses.Add(applicationGymClass);
 
+                var adminApplicationGymClass = new ApplicationUserGymClass
+                {
+                    ApplicationUserId = adminId,
+                    GymClassId = gymClasses[i].Id
+                };
+                applicationUserGymClasses.Add(adminApplicationGymClass); // is never saved...
+
             }
             return applicationUserGymClasses;
 
         }
+
+        //public IQueryable<ApplicationUser> GetUsersInRole(string roleName)
+        //{
+        //    return from user in ApplicationUsers
+        //           where user.Roles.Any(r => r.Role.Name == roleName)
+        //           select user;
+        //}
 
         private static List<ApplicationUser> MakeApplicationUsers()
         {
@@ -141,11 +160,10 @@ namespace GymBookingSystem.Data
                 var gymclass = new GymClass
                 {
                     //Id = i, // THIS HERE LINE `SHOULD NOT BE HERE RIGHT?? it is set by the dbContext...
-                    Name = $"{fake.Name.FirstName()} + ball ",
-                    StartTime = fake.Date.Between((DateTime.Now - timeSpanOld), (DateTime.Now + timeSpan)),
+                    Name = $"{fake.Name.FirstName()}ball",
+                    StartTime = DateTime.Now.AddDays(fake.Random.Int(-5, 5)),
                     Duration = TimeSpan.FromMinutes(20),
-                    Description = "Random Description Here"
-
+                    Description = fake.Hacker.Verb()
                 };
                 gymClasses.Add(gymclass);
             }
