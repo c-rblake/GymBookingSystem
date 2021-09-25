@@ -55,26 +55,24 @@ namespace GymBookingSystem.Controllers
             var model2 = db.ApplicationUserGymClasses.Include(agc => agc.GymClass)
                 .Where(agc => agc.ApplicationUserId == userId); //Attending classes
 
-
             var model = db.GymClasses.Select(g => new GymClassAttendingViewModel {
                 Id = g.Id,
                 Name = g.Name,
                 StartTime = g.StartTime,
                 Duration = g.Duration,
+                Attending = db.ApplicationUserGymClasses.Any(agc => (agc.GymClassId == g.Id) && (agc.ApplicationUserId == userId)) // THis should then be true with that logic. But it is false. So agc.ApplicationUserId == userId is false.
 
+                //Attending = !(g.ApplicationUserGymClasses.FirstOrDefault(a => a.ApplicationUserId == userId && a.GymClassId == g.Id) == null) // Not null => True/Attending
                 //Transform to T-SQL but a stored procedure would be better since FIND works for this problem.
                 //Attending = isAttending(g.Id, userId) //With anonymous function there is no such confusion, so they are allowed.
                 //Functions cannot be packed into Linq so easily since they need to be read out.
                 //https://stackoverflow.com/questions/44228502/an-expression-tree-may-not-contain-a-reference-to-a-local-function
                 //Find  cannot be called with instance of type 'System.Linq.IQueryable
-
-                //Attending = !(db.ApplicationUserGymClasses.Find(userId, g.Id) == null) // Not null => True/Attending
                 //Attending = !(db.ApplicationUserGymClasses.FirstOrDefault(agc => (agc.GymClassId == g.Id) && (agc.ApplicationUserId == userId)) == null) // Still too Loopy.
                 //Attending = db.ApplicationUserGymClasses.Where(agc => agc.GymClassId == 1) // Still too Loopy.
                 //Attending =  db.ApplicationUserGymClasses.Any(agc => agc.ApplicationUserId == userId)  // Evaluates to FALSE. WHY? Not Logged in? nope.
                 //Attending = db.ApplicationUserGymClasses.Any(agc => agc.GymClassId == g.Id) // Evaluates to True...
                 // BUGGY SCOPE OF LINQ maybe. Linq => T-SQL if no connection to the Query then it cannot evaluate it. So if i dont use g. then it wont help.
-                Attending = db.ApplicationUserGymClasses.Any(agc => (agc.GymClassId == g.Id) && (agc.ApplicationUserId == userId)) // THis should then be true with that logic. But it is false. So agc.ApplicationUserId == userId is false.
                 //These Bools are reversed.
                 //Attending = g.Id is int
 
@@ -149,6 +147,39 @@ namespace GymBookingSystem.Controllers
             return View(gymClass);
         }
 
+        public async Task<IActionResult> BookingToggleTwo(int? id)
+        {
+            if (id is null)
+            {
+                //throw new ArgumentNullException(nameof(id));
+                return NotFound();
+            }
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var isAttendingRow = db.ApplicationUserGymClasses.Find(userId, id);
+
+            if (isAttendingRow is null)
+            {
+                db.ApplicationUserGymClasses.Add( new ApplicationUserGymClass 
+                {
+                    ApplicationUserId = userId,
+                    GymClassId = (int)id
+                });
+            }
+            else
+            {
+                db.ApplicationUserGymClasses.Remove(isAttendingRow);
+            }
+            await db.SaveChangesAsync();
+
+            return RedirectToAction("MoreSophisticatedIndex");
+        }
+
+
+
+
+
+
         [Authorize]
         public async Task<IActionResult> BookingToggle(int? id)
         {
@@ -169,17 +200,17 @@ namespace GymBookingSystem.Controllers
                     ApplicationUserId = userId,
                     GymClassId = (int)id
                 });
-                TempData["BookedStatus"] = $"Successfull booking for {gymClass.Name} at {gymClass.StartTime}";
+                //TempData["BookedStatus"] = $"Successfull booking for {gymClass.Name} at {gymClass.StartTime}";
                 //TempData["BookedStatus"] = $"Successfull booking for ...";
             }
             else
             {
                 db.ApplicationUserGymClasses.Remove(isAttendingRow);
-                TempData["BookedStatus"] = $"Successfull UNbooking for {gymClass.Name} at {gymClass.StartTime}";
+                //TempData["BookedStatus"] = $"Successfull UNbooking for {gymClass.Name} at {gymClass.StartTime}";
                 //TempData["BookedStatus"] = $"Successfull UNbooking for ";
             }
             await db.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(MoreSophisticatedIndex));
         }
 
         [Authorize(Roles ="Admin")]

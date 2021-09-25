@@ -77,7 +77,7 @@ namespace GymBookingSystem
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=GymClasses}/{action=Index}/{id?}");
+                    pattern: "{controller=GymClasses}/{action=MoreSophisticatedIndex}/{id?}");
                 endpoints.MapRazorPages();
             });
         }

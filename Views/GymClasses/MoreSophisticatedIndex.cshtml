@@ -4,12 +4,24 @@
     ViewData["Title"] = "MoreSophisticatedIndex";
 }
 
-<h1>MoreSophisticatedIndex</h1>
+<h1>My Booking View</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
+
+<div class="row">
+    <div class="col-2 "><a class="link-secondary" asp-action="MoreSophisticatedIndex">Gym Classes</a></div>
+    <div class="col-2 "><a class="link-danger" asp-action="MyHistory">My History</a></div>
+    <div class="col-2 "><a class="link-warning" asp-action="MyBookings">My Bookings</a></div>
+    <div class="col-2 "><a asp-action="Index">All Classes</a></div>
+    @if (User.IsInRole("Admin"))
+    {
+    <div class="col-2">
+        <a class="link-secondary" asp-action="Create">Create Gym Class</a>
+    </div>
+
+        }
+</div>
+
+<table class="table table-striped">
     <thead>
         <tr>
             <th>
@@ -28,50 +40,51 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.StartTime)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Duration)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Attending)
-            </td>
-            @if (User.Identity.IsAuthenticated)
-            {
-                @if (!item.Attending)
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.StartTime)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Duration)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Attending)
+                </td>
+                @if (User.Identity.IsAuthenticated)
                 {
-                    <td>
-                        <a asp-action="BookingToggle" asp-route-id="@item.Id"
-                           class="btn btn-success">Book Now</a>
-                    </td>
+                    @if (!item.Attending)
+                    {
+                        <td>
+                            <a asp-action="BookingToggle" asp-route-id="@item.Id"
+                               class="btn btn-success">Book Now</a>
+                        </td>
+                    }
+
+                    else
+                    {
+                        <td>
+                            <a asp-action="BookingToggle" asp-route-id="@item.Id"
+                               class="btn btn-danger">Unbook</a>
+                        </td>
+                    }
+
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <td>
+                            <a asp-action="Edit" asp-route-id="@item.Id">Edit</a><span>|</span>
+                            <a asp-action="Details" asp-route-id="@item.Id">Details</a> <span>|</span>
+                            <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+
+                        </td>
+                    }
+
                 }
-
-                else
-                {
-                    <td>
-                        <a asp-action="BookingToggle" asp-route-id="@item.Id"
-                           class="btn btn-danger" >Unbook</a>
-                    </td>
-                }
-
-                @if (User.IsInRole("Admin"))
-                {
-                    <td>
-                        <a asp-action="Edit" asp-route-id="@item.Id">Edit</a><span>|</span>
-                        <a asp-action="Details" asp-route-id="@item.Id">Details</a> <span>|</span>
-                        <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-
-                    </td>
-                }
-
-            }
-        </tr>
-}
+            </tr>
+        }
     </tbody>
 </table>
