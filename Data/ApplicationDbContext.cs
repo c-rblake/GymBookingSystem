@@ -25,6 +25,21 @@ namespace GymBookingSystem.Data
         {
         }
 
+        public ApplicationDbContext()
+        {
+        }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            if(!optionsBuilder.IsConfigured)
+            {
+                optionsBuilder.UseSqlServer(
+                    "Data Source= (localdb)\\MSSQLLocalDB; Initial Catalog=BookingTestData");
+            }
+
+
+        }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

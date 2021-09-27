@@ -34,6 +34,16 @@ namespace GymBookingSystem.Controllers
             return View("Index", await model.ToListAsync());
         }
 
+        [AllowAnonymous]
+        public async Task<IActionResult> Index(ApplicationDbContext db)
+        {
+            var model = db.GymClasses.IgnoreQueryFilters(); // Query filter for only future bookings.
+
+            return View("Index", await model.ToListAsync());
+        }
+
+
+
         public async Task<IActionResult> MoreSophisticatedIndex()
         {
 
@@ -221,7 +231,7 @@ namespace GymBookingSystem.Controllers
         // GET: GymClasses/Create
         public IActionResult Create()
         {
-            return View();
+            return View("Create");
         }
 
         // POST: GymClasses/Create
